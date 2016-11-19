@@ -84,7 +84,8 @@ app.post( '/api/message', function(req, res) {
   }
 
   // INJECT VARIABLES INTO CONTEXT
-  payload.context.currentTotal = 123;
+  payload.context.currentTotal = 0;
+  payload.context.numerOfPizzasInCart = 0;
 
   // Send the input to the conversation service
   conversation.message( payload, function(err, data) {
