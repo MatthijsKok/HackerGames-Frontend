@@ -99,7 +99,8 @@ app.post('/api/message', function (req, res) {
         console.log(data);
         console.log('------')
         if (data.context.currentPizza != null) {
-            addPizza(data.context.currentPizza);
+            console.log(data.context.currentPizza);
+            addPizza(data.context.roomNumber, data.context.currentPizza);
             delete data.context["currentPizza"];
         }
 
@@ -108,7 +109,7 @@ app.post('/api/message', function (req, res) {
         }
 
         if (data.intents.length > 0) {
-            console.log(data.intents[0].intent)
+            // console.log(data.intents[0].intent)
             switch (data.intents[0].intent) {
                 case "createRoom":
                     // if (data.context.wantToJoinRoom != null) {
@@ -116,12 +117,23 @@ app.post('/api/message', function (req, res) {
                     // }
                     // console.log("Joining Room")
                     // //res.json({"":""});
-                    createRoom(function(id) {
+                    createRoom(function (id) {
                         data.context.roomNumber = id;
-                        data.output.text = "I have created a room for with id:"+id;
-                        console.log("Your Room id is now: "+id)
+                        data.output.text = "I have created a room for with id:" + id;
+                        console.log("Your Room id is now: " + id)
                         return res.json(updateMessage(payload, data));
                     })
+                    break;
+                case "currentList":
+                    getRoomInfo(data.context.roomNumber, function (pizzas) {
+                        var names = [];
+
+                        for (var i = 0; i < pizzas.length; i++) {
+                            names[i] = pizzas[i].details.name;
+                        }
+                        data.output.text = names.join("<br />");
+                        return res.json(updateMessage(payload, data));
+                    });
                     break;
                 default:
                     if (err) {
@@ -134,7 +146,6 @@ app.post('/api/message', function (req, res) {
         } else {
             return res.json(updateMessage(payload, data));
         }
-
 
 
     });
@@ -273,12 +284,25 @@ if (cloudantUrl) {
     });
 }
 
-var PREFIX = "http://95.85.26.95:8080/api/v1/";
+var PREFIX = "http://localhost:8080/api/v1/";
 var CREATE_ROOM_ENDPOINT = PREFIX + "rooms";
 var JOIN_ROOM_ENDPOINT = PREFIX + "room/";
 var ADD_PIZZA_ENDPOINT_START = PREFIX + "room/";
 var ADD_PIZZA_ENDPOINT_END = "/pizza";
 
+function getRoomInfo(roomId, callback) {
+    request.get(
+        PREFIX + "/room/" + roomId,
+        function (error, response, body) {
+            console.log(error, response);
+            if (!error && response.statusCode == 200) {
+                console.log(body);
+                body = JSON.parse(body);
+                callback(body.pizzas);
+            }
+        }
+    )
+}
 
 function createRoom(callback) {
     request
@@ -292,14 +316,33 @@ function createRoom(callback) {
         })
 }
 
-function addPizza(roomId, pizza, callback) {
-    request.put(
-        ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&Pizza.25CM",
+function getRoomInfo(roomId, callback) {
+    request.get(
+        PREFIX + "/room/" + roomId,
         function (error, response, body) {
             console.log(error, response);
             if (!error && response.statusCode == 200) {
                 console.log(body);
-                callback();
+                body = JSON.parse(body);
+                callback(body.pizzas);
+            }
+        }
+    )
+}
+
+function addPizza(roomId, pizza, callback) {
+    request(
+        {
+            url: ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&4",
+            method: "PUT"
+        },
+        function (error, response, body) {
+            console.log(error, response);
+            if (!error && response.statusCode == 200) {
+                console.log(body);
+                if (callback != null) {
+                    callback();
+                }
             }
         });
 }
