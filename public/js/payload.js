@@ -19,28 +19,12 @@ var PayloadPanel = (function() {
 
   // Publicly accessible methods defined
   return {
-    init: init,
-    togglePanel: togglePanel
+    init: init
   };
 
   // Initialize the module
   function init() {
     payloadUpdateSetup();
-  }
-
-  // Toggle panel between being:
-  //    reduced width (default for large resolution apps)
-  //    hidden (default for small/mobile resolution apps)
-  //    full width (regardless of screen size)
-  function togglePanel(event, element) {
-    var payloadColumn = document.querySelector(settings.selectors.payloadColumn);
-    if (element.classList.contains('full')) {
-      element.classList.remove('full');
-      payloadColumn.classList.remove('full');
-    } else {
-      element.classList.add('full');
-      payloadColumn.classList.add('full');
-    }
   }
 
   // Set up callbacks on payload setters in Api module
