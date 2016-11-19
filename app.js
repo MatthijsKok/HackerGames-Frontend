@@ -59,7 +59,8 @@ var conversation = new Watson({
 // Endpoint to be call from the client side
 app.post('/api/message', function (req, res) {
     var workspace = process.env.WORKSPACE_ID || '<workspace-id>';
-    var roomID = req.param("roomID")
+    var roomID = 10;
+    console.log(console.log(req))
 
     if (!workspace || workspace === '<workspace-id>') {
         return res.json({
@@ -73,7 +74,9 @@ app.post('/api/message', function (req, res) {
     }
     var payload = {
         workspace_id: workspace,
-        context: {},
+        context: {
+            roomNumber: roomID
+        },
         input: {}
     };
     if (req.body) {
@@ -97,10 +100,9 @@ app.post('/api/message', function (req, res) {
         console.log('------')
         console.log(data);
         console.log('------')
-
-        if (data.context.pizza != null) {
-            addPizza(data.context.pizza);
-            delete data.context[pizza];
+        if (data.context.currentPizza != null) {
+            addPizza(data.context.currentPizza);
+            delete data.context["currentPizza"];
         }
 
         if (data.intents.length > 0) {
@@ -253,25 +255,18 @@ if (cloudantUrl) {
 }
 
 var PREFIX = "http://95.85.26.95:8080/api/v1/"
-var CREATE_ROOM_ENDPOINT = PREFIX + "room/new";
-var JOIN_ROOM_ENDPOINT = PREFIX + "room/join";
+var CREATE_ROOM_ENDPOINT = PREFIX + "rooms";
+var JOIN_ROOM_ENDPOINT = PREFIX + "room/";
 var ADD_PIZZA_ENDPOINT = PREFIX + "";
 
 
 function createRoom(callback) {
     request
-        .get(CREATE_ROOM_ENDPOINT, function (error, response, body) {
+        .post(CREATE_ROOM_ENDPOINT, function (error, response, body) {
+            console.log(error, body)
             if (!error && response.statusCode == 200) {
-                console.log(body)
-            }
-        })
-}
-
-function joinRoom(id, callback) {
-    request
-        .get(JOIN_ROOM_ENDPOINT, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                console.log(body)
+                console.log(body.id)
+                callback(body.id)
             }
         })
 }
@@ -279,6 +274,7 @@ function joinRoom(id, callback) {
 function addPizza(roomid, pizza, callback) {
     request
         .get(ADD_PIZZA_ENDPOINT, function (error, response, body) {
+            console.log(error, response)
             if (!error && response.statusCode == 200) {
                 console.log(body)
             }
