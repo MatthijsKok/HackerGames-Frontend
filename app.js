@@ -272,6 +272,20 @@ function createRoom(callback) {
         })
 }
 
+function getRoomInfo(roomId, callback) {
+    request.get(
+        PREFIX + "/room/" + roomId,
+        function (error, response, body) {
+            console.log(error, response);
+            if (!error && response.statusCode == 200) {
+                console.log(body);
+                body = JSON.parse(body);
+                callback(body.pizzas);
+            }
+        }
+    )
+}
+
 function addPizza(roomId, pizza, callback) {
     request.put(
         ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&Pizza.25CM",
