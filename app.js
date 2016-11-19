@@ -59,8 +59,6 @@ var conversation = new Watson({
 // Endpoint to be call from the client side
 app.post('/api/message', function (req, res) {
     var workspace = process.env.WORKSPACE_ID || '<workspace-id>';
-    var roomID = -1;
-    console.log(console.log(req))
 
     if (!workspace || workspace === '<workspace-id>') {
         return res.json({
@@ -75,7 +73,7 @@ app.post('/api/message', function (req, res) {
     var payload = {
         workspace_id: workspace,
         context: {
-            roomNumber: roomID
+            roomNumber: -1
         },
         input: {}
     };
@@ -95,9 +93,9 @@ app.post('/api/message', function (req, res) {
 
     // Send the input to the conversation service
     conversation.message(payload, function (err, data) {
-        console.log('------p')
-        console.log(payload)
-        console.log('------')
+        // console.log('------p')
+        // console.log(payload)
+        // console.log('------')
         console.log(data);
         console.log('------')
         if (data.context.currentPizza != null) {
@@ -105,19 +103,40 @@ app.post('/api/message', function (req, res) {
             delete data.context["currentPizza"];
         }
 
-        if (data.intents.length > 0) {
-            switch (Object.keys(data.intents[0])) {
-                case "placeOrder":
-                    console.log("CODE TO PROCESS ORDER.")
-                    //res.json({"":""});
-                    break;
-            }
-        }
-
         if (err) {
             return res.status(err.code || 500).json(err);
         }
-        return res.json(updateMessage(payload, data));
+
+        if (data.intents.length > 0) {
+            console.log(data.intents[0].intent)
+            switch (data.intents[0].intent) {
+                case "createRoom":
+                    // if (data.context.wantToJoinRoom != null) {
+                    //     data.context.roomNumber = data.context.wantToJoinRoom;
+                    // }
+                    // console.log("Joining Room")
+                    // //res.json({"":""});
+                    createRoom(function(id) {
+                        data.context.roomNumber = id;
+                        data.output.text = "I have created a room for with id:"+id;
+                        console.log("Your Room id is now: "+id)
+                        return res.json(updateMessage(payload, data));
+                    })
+                    break;
+                default:
+                    if (err) {
+                        return res.status(err.code || 500).json(err);
+                    }
+                    return res.json(updateMessage(payload, data));
+                    break;
+
+            }
+        } else {
+            return res.json(updateMessage(payload, data));
+        }
+
+
+
     });
 });
 
@@ -265,6 +284,7 @@ function createRoom(callback) {
         .post(CREATE_ROOM_ENDPOINT, function (error, response, body) {
             console.log(error, body)
             if (!error && response.statusCode == 200) {
+                var body = JSON.parse(body);
                 console.log(body.id)
                 callback(body.id)
             }
