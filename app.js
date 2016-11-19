@@ -273,10 +273,11 @@ if (cloudantUrl) {
     });
 }
 
-var PREFIX = "http://95.85.26.95:8080/api/v1/"
+var PREFIX = "http://95.85.26.95:8080/api/v1/";
 var CREATE_ROOM_ENDPOINT = PREFIX + "rooms";
 var JOIN_ROOM_ENDPOINT = PREFIX + "room/";
-var ADD_PIZZA_ENDPOINT = PREFIX + "";
+var ADD_PIZZA_ENDPOINT_START = PREFIX + "room/";
+var ADD_PIZZA_ENDPOINT_END = "/pizza";
 
 
 function createRoom(callback) {
@@ -291,15 +292,28 @@ function createRoom(callback) {
         })
 }
 
-function addPizza(roomid, pizza, callback) {
-    request
-        .get(ADD_PIZZA_ENDPOINT, function (error, response, body) {
-            console.log(error, response)
+function addPizza(roomId, pizza, callback) {
+    request.put(
+        ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&Pizza.25CM",
+        function (error, response, body) {
+            console.log(error, response);
             if (!error && response.statusCode == 200) {
-                console.log(body)
+                console.log(body);
+                callback();
             }
-        })
+        });
 }
 
+function deletePizza(roomId, pizza, callback) {
+    request.delete(
+        ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&Pizza.25CM",
+        function (error, response, body) {
+            console.log(error, response);
+            if (!error && response.statusCode == 200) {
+                console.log(body);
+                callback();
+            }
+        });
+}
 
 module.exports = app;
