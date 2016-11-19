@@ -1,4 +1,10 @@
+var msg;
+
 function speak(string)	{
-	var msg = new SpeechSynthesisUtterance(string);
+	msg = new SpeechSynthesisUtterance(string);
 	window.speechSynthesis.speak(msg);
+}
+
+function cancelSpeak()	{
+	window.speechSynthesis.cancel();
 }
