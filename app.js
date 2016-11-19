@@ -21,6 +21,7 @@ require( 'dotenv' ).config( {silent: true} );
 var express = require( 'express' );  // app server
 var bodyParser = require( 'body-parser' );  // parser for post requests
 var Watson = require( 'watson-developer-cloud/conversation/v1' );  // watson sdk
+var request = require('request')
 
 // The following requires are needed for logging purposes
 var uuid = require( 'uuid' );
@@ -243,10 +244,40 @@ if ( cloudantUrl ) {
   } );
 }
 
-// Cases
-function listMenu() {
+var PREFIX = "http://95.85.26.95:8080/api/v1/"
+var CREATE_ROOM_ENDPOINT = PREFIX + "room/new";
+var JOIN_ROOM_ENDPOINT = PREFIX + "room/join";
+var ADD_PIZZA_ENDPOINT = PREFIX + "";
 
+
+function createRoom(callback) {
+  request
+  .get(CREATE_ROOM_ENDPOINT, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log(body)
+    }
+  })
 }
+
+function joinRoom(id, callback) {
+    request
+    .get(JOIN_ROOM_ENDPOINT, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        }
+    })
+}
+
+function addPizza(roomid, pizza, callback) {
+  request
+  .get(ADD_PIZZA_ENDPOINT, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log(body)
+    }
+  })
+}
+
+
 
 
 module.exports = app;
