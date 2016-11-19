@@ -99,6 +99,7 @@ app.post('/api/message', function (req, res) {
         console.log(data);
         console.log('------')
         if (data.context.currentPizza != null) {
+            console.log(data.context.currentPizza);
             addPizza(data.context.currentPizza);
             delete data.context["currentPizza"];
         }
@@ -108,7 +109,7 @@ app.post('/api/message', function (req, res) {
         }
 
         if (data.intents.length > 0) {
-            console.log(data.intents[0].intent)
+            // console.log(data.intents[0].intent)
             switch (data.intents[0].intent) {
                 case "createRoom":
                     // if (data.context.wantToJoinRoom != null) {
@@ -122,6 +123,16 @@ app.post('/api/message', function (req, res) {
                         console.log("Your Room id is now: "+id)
                         return res.json(updateMessage(payload, data));
                     })
+                    break;
+                case "currentList":
+                    getRoomInfo(data.context.roomNumber, function(pizzas)    {
+                        var names;
+
+                        for(var i = 0; i < pizzas.length; i++)  {
+                            names[i] = pizzas[i].details.name;
+                            console.log(names[i]);
+                        }
+                    });
                     break;
                 default:
                     if (err) {
@@ -278,6 +289,19 @@ var CREATE_ROOM_ENDPOINT = PREFIX + "rooms";
 var JOIN_ROOM_ENDPOINT = PREFIX + "room/";
 var ADD_PIZZA_ENDPOINT = PREFIX + "";
 
+function getRoomInfo(roomId, callback) {
+    request.get(
+        PREFIX + "/room/" + roomId,
+        function (error, response, body) {
+            console.log(error, response);
+            if (!error && response.statusCode == 200) {
+                console.log(body);
+                body = JSON.parse(body);
+                callback(body.pizzas);
+            }
+        }
+    )
+}
 
 function createRoom(callback) {
     request
