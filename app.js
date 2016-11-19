@@ -97,11 +97,6 @@ app.post( '/api/message', function(req, res) {
 
     if (data.intents.length > 0) {
     switch (Object.keys(data.intents[0])) {
-      case "currentTotal":
-        // INSERT CODE TO RETURN MENU
-        console.log("CODE TO RETURN PRICE LIST.")
-        //res.json({"":""});
-        break;
       case "placeOrder":
         console.log("CODE TO PROCESS ORDER.")
         //res.json({"":""});
