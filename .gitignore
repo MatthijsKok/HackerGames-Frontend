@@ -4,3 +4,4 @@ temp/
 .idea/
 coverage
 npm-debug.log
+*.iml
