@@ -100,7 +100,7 @@ app.post('/api/message', function (req, res) {
         console.log('------')
         if (data.context.currentPizza != null) {
             console.log(data.context.currentPizza);
-            addPizza(data.context.currentPizza);
+            addPizza(data.context.roomNumber, data.context.currentPizza);
             delete data.context["currentPizza"];
         }
 
@@ -117,20 +117,19 @@ app.post('/api/message', function (req, res) {
                     // }
                     // console.log("Joining Room")
                     // //res.json({"":""});
-                    createRoom(function(id) {
+                    createRoom(function (id) {
                         data.context.roomNumber = id;
-                        data.output.text = "I have created a room for with id:"+id;
-                        console.log("Your Room id is now: "+id)
+                        data.output.text = "I have created a room for with id:" + id;
+                        console.log("Your Room id is now: " + id)
                         return res.json(updateMessage(payload, data));
                     })
                     break;
                 case "currentList":
-                    getRoomInfo(data.context.roomNumber, function(pizzas)    {
-                        var names;
+                    getRoomInfo(data.context.roomNumber, function (pizzas) {
+                        var names = [];
 
-                        for(var i = 0; i < pizzas.length; i++)  {
+                        for (var i = 0; i < pizzas.length; i++) {
                             names[i] = pizzas[i].details.name;
-                            console.log(names[i]);
                         }
                     });
                     break;
@@ -145,7 +144,6 @@ app.post('/api/message', function (req, res) {
         } else {
             return res.json(updateMessage(payload, data));
         }
-
 
 
     });
@@ -284,7 +282,7 @@ if (cloudantUrl) {
     });
 }
 
-var PREFIX = "http://95.85.26.95:8080/api/v1/";
+var PREFIX = "http://localhost:8080/api/v1/";
 var CREATE_ROOM_ENDPOINT = PREFIX + "rooms";
 var JOIN_ROOM_ENDPOINT = PREFIX + "room/";
 var ADD_PIZZA_ENDPOINT_START = PREFIX + "room/";
@@ -331,13 +329,18 @@ function getRoomInfo(roomId, callback) {
 }
 
 function addPizza(roomId, pizza, callback) {
-    request.put(
-        ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&Pizza.25CM",
+    request(
+        {
+            url: ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&4",
+            method: "PUT"
+        },
         function (error, response, body) {
             console.log(error, response);
             if (!error && response.statusCode == 200) {
                 console.log(body);
-                callback();
+                if (callback != null) {
+                    callback();
+                }
             }
         });
 }
