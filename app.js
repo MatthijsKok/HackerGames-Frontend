@@ -333,7 +333,7 @@ function getRoomInfo(roomId, callback) {
 function addPizza(roomId, pizza, callback) {
     request(
         {
-            url: ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&4",
+            url: ADD_PIZZA_ENDPOINT_START + roomId + ADD_PIZZA_ENDPOINT_END + "/" + pizza + "&Pizza.25CM",
             method: "PUT"
         },
         function (error, response, body) {
