@@ -59,7 +59,7 @@ var conversation = new Watson({
 // Endpoint to be call from the client side
 app.post('/api/message', function (req, res) {
     var workspace = process.env.WORKSPACE_ID || '<workspace-id>';
-    var roomID = 10;
+    var roomID = -1;
     console.log(console.log(req))
 
     if (!workspace || workspace === '<workspace-id>') {
