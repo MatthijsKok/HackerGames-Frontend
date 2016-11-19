@@ -20,7 +20,8 @@ var ConversationPanel = (function() {
   // Publicly accessible methods defined
   return {
     init: init,
-    inputKeyDown: inputKeyDown
+    inputKeyDown: inputKeyDown,
+    inputSpeech: inputSpeech
   };
 
   // Initialize the module
@@ -225,4 +226,17 @@ var ConversationPanel = (function() {
       Common.fireEvent(inputBox, 'input');
     }
   }
+
+  // Handles the submission of input
+  function inputSpeech(inputsource) {
+    var context;
+    var latestResponse = Api.getResponsePayload();
+    if (latestResponse) {
+      context = latestResponse.context;
+    }
+
+    // Send the user message
+    Api.sendRequest(inputsource, context);
+  }
+
 }());
