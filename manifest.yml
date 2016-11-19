@@ -4,12 +4,12 @@ declared-services:
     label: conversation
     plan: free
 applications:
-- name: conversation-simple
+- name: bravoEWI
   command: npm start
   path: .
   memory: 256M
   instances: 1
   services:
-  - conversation-simple-demo-test1
+  - bravoEWI
   env:
     NPM_CONFIG_PRODUCTION: false
