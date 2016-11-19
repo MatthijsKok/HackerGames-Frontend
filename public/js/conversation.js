@@ -105,11 +105,11 @@ var ConversationPanel = (function() {
     }
 
     // Any time the input changes, or the window resizes, adjust the size of the input box
-    input.addEventListener('input', adjustInput);
-    window.addEventListener('resize', adjustInput);
+    // input.addEventListener('input', adjustInput);
+    // window.addEventListener('resize', adjustInput);
 
     // Trigger the input event once to set up the input box and dummy element
-    Common.fireEvent(input, 'input');
+    // Common.fireEvent(input, 'input');  
   }
 
   // Display a user or Watson message that has just been sent/received
@@ -225,4 +225,17 @@ var ConversationPanel = (function() {
       Common.fireEvent(inputBox, 'input');
     }
   }
+
+  // Handles the submission of input
+  function inputKeyDown(inputsource) {
+    var context;
+    var latestResponse = Api.getResponsePayload();
+    if (latestResponse) {
+      context = latestResponse.context;
+    }
+
+    // Send the user message
+    Api.sendRequest(inputsource, context);
+  }
+
 }());

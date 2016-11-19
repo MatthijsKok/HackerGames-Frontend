@@ -9,21 +9,21 @@
   <meta property="og:description" content="Sample application that shows how to use the Conversation API to identify user intents" />
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/app.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div id="view-change-button" class="button" onclick="PayloadPanel.togglePanel(event, this)">
-    <img class="option full" src="../img/Chat Button.png">
-    <img class="option not-full" src="../img/Code Button.png">
-  </div>
   <div id="contentParent" class="responsive-columns-wrapper">
     <div id="chat-column-holder" class="responsive-column content-column">
       <div class="chat-column">
         <div id="scrollingChat"></div>
-        <label for="textInput" class="inputOutline">
+        <button onclick="start()">
+            <i id="mic_on" class="material-icons">mic</i>
+          </button>
+<!--         <label for="textInput" class="inputOutline">
           <input id="textInput" class="input responsive-column"
             placeholder="Type something" type="text"
             onkeydown="ConversationPanel.inputKeyDown(event, this)">
-        </label>
+        </label> -->
       </div>
     </div>
     <div id="payload-column" class="fixed-column content-column">
@@ -34,6 +34,51 @@
       <div id="payload-response" class="payload"></div>
     </div>
   </div>
+
+  <script type="text/javascript">
+    
+  function start()  {
+    if(recognizing) {
+      recognition.stop();
+      return;
+    }
+    recognition.lang = 'en-US';
+    recognition.start();
+  }
+
+    var recognizing = false;
+    var final_transcript = '';
+    var recognition = new webkitSpeechRecognition();
+
+    recognition.onstart = function() {
+      recognizing = true;
+      console.log("[INFO] The recognition has started");
+    };
+
+    recognition.onerror = function(event) {
+      console.log("[ERROR] " + event.error);
+    };
+
+    recognition.onend = function() {
+      recognizing = false;
+    };
+
+    recognition.onresult = function(event) {
+    var interim_transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+        console.log("[INFO] " + event.results[i][0].transcript);
+        var transcript = event.results[i][0].transcript;
+
+        ConversationPanel.inputKeyDown(transcript);
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+  };
+
+  </script>
 
   <script src="js/common.js"></script>
   <script src="js/api.js"></script>
