@@ -131,6 +131,8 @@ app.post('/api/message', function (req, res) {
                         for (var i = 0; i < pizzas.length; i++) {
                             names[i] = pizzas[i].details.name;
                         }
+                        data.output.text = names.join("<br />");
+                        return res.json(updateMessage(payload, data));
                     });
                     break;
                 default:
